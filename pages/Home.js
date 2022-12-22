@@ -54,6 +54,7 @@ export default function Home() {
 
   return (
     <View style={{ alignItems: 'center', flex:1}}>
+      <Text style={{fontSize: 30, marginTop: 20}} onPress={()=>console.log('this is a log')}>Home</Text>
       <ProgressChart
         data={data}
         width={width}
