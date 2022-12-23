@@ -1,87 +1,115 @@
-import { View, Text, Dimensions } from 'react-native'
-import React from 'react'
-import {
-  ProgressChart,
-  ContributionGraph,
-  BarChart
-} from "react-native-chart-kit";
+import { View, Text, StyleSheet, StatusBar, SafeAreaView, FlatList, TouchableOpacity, Animated, Button } from 'react-native'
+import React,{useState, useEffect, useRef} from 'react'
+import data from '../utils/fakeData.json'
+import { Fab, WarningTwoIcon } from 'native-base';
 
-
-const data = {
-  labels: ["Swim", "Bike", "Run"], // optional
-  data: [0.4, 0.6, 0.8]
-};
-
-const commitsData = [
-  { date: "2017-01-02", count: 1 },
-  { date: "2017-01-03", count: 2 },
-  { date: "2017-01-04", count: 3 },
-  { date: "2017-01-05", count: 4 },
-  { date: "2017-01-06", count: 5 },
-  { date: "2017-01-30", count: 2 },
-  { date: "2017-01-31", count: 3 },
-  { date: "2017-03-01", count: 2 },
-  { date: "2017-04-02", count: 4 },
-  { date: "2017-03-05", count: 2 },
-  { date: "2017-02-30", count: 4 }
-];
-
-const barData = {
-  labels: ["January", "February", "March", "April", "May", "June"],
-  datasets: [
-    {
-      data: [20, 45, 28, 80, 99, 43]
-    }
-  ]
-};
+const Item = ({ item, onPress, backgroundColor, textColor }) => (
+  <Animated.View>
+    <TouchableOpacity onPress={onPress} style={[styles.item, backgroundColor]}>
+      <Text style={[styles.title, textColor]}>{item.title} {item.id}</Text>
+    </TouchableOpacity>
+  </Animated.View>
+);
 
 export default function Home() {
-  width=Dimensions.get("window").width
-  chartConfig={
-    backgroundColor: "#212529",
-    backgroundGradientFrom: "#495057",
-    backgroundGradientTo: "#588157",
-    decimalPlaces: 2, // optional, defaults to 2dp
-    color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
-    labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+  const [selectedId, setSelectedId] = useState(null);
+  const flatRef = useRef(null);
 
-    propsForDots: {
-      r: "6",
-      strokeWidth: "2",
-      stroke: "#ffa726"
-    }
+  const AnimatedFlatList = Animated.createAnimatedComponent(FlatList);
+  const y = new Animated.Value(0);
+  const onScroll = Animated.event([{ nativeEvent: { contentOffset: { y } } }], { useNativeDriver: true });
+
+  const renderItem = ({ item }) => {
+    const backgroundColor = item.id === selectedId ? "gray" : "lightgray";
+    const color = item.id === selectedId ? 'white' : 'black';
+    return (
+      <Item
+        style={styles.item}
+        item={item}
+        onPress={() => setSelectedId(item.id)}
+        backgroundColor={{ backgroundColor }}
+        textColor={{ color }}
+      />
+    );
+  };
+
+  const foonction = () => {
+    flatRef.current.scrollToIndex({animated: true, index: 200});
   }
 
+
   return (
-    <View style={{ alignItems: 'center', flex:1}}>
-      <Text style={{fontSize: 30, marginTop: 20}} onPress={()=>console.log('this is a log')}>Home</Text>
-      <ProgressChart
+    <SafeAreaView style={styles.container}>
+      <Button title="scroll to end" onPress={()=> foonction()}/>
+      <AnimatedFlatList
+        contentContainerStyle={styles.flatContainer}
         data={data}
-        width={width}
-        height={220}
-        strokeWidth={16}
-        radius={32}
-        chartConfig={chartConfig}
-        hideLegend={false}
-      />
-      <ContributionGraph
-        style={{marginTop: 10}}
-        values={commitsData}
-        endDate={new Date("2017-04-01")}
-        numDays={105}
-        width={width}
-        height={220}
-        chartConfig={chartConfig}
-      />
-      <BarChart
-        style={{marginTop: 10}}
-        data={barData}
-        width={width}
-        height={220}
-        yAxisLabel="$"
-        chartConfig={chartConfig}
-        verticalLabelRotation={30}
-      />
-    </View>
+        renderItem={renderItem}
+        keyExtractor={item => item.id}
+        extraData={selectedId}
+        ItemSeparatorComponent={() => <View style={styles.separator} />}
+        ListEmptyComponent={() => <Text style={styles.footerText}>No Data</Text>}
+        ListFooterComponent={() => <Text style={styles.footerText}>End of Data</Text>}
+        ListFooterComponentStyle={styles.footer}
+        ListHeaderComponent={() => <Text style={styles.headerText}>Start of Data</Text>}
+        onEndReached={() => alert('end reached')}
+        oneEndReachedThreshold={0.7}
+        removeClippedSubviews
+        flashScrollIndicators
+        getItemLayout={(data, index) => ({length: 91, offset: 91 * index, index})}
+        ref={flatRef}
+        scrollEventThrottle={16} 
+        {...{ onScroll }}
+      /> 
+      <Fab position="absolute" size="sm" icon={<WarningTwoIcon/>} onPress={()=> flatRef.current.scrollToOffset({animated: true, offset: 0})}/>
+    </SafeAreaView>
   )
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    alignItems: 'center',
+  },
+  flatContainer: {
+    flexGrow: 1,
+    justifyContent: 'center',
+    width: '90%',
+  },
+  title: {
+    fontSize: 16,
+    color: 'black'
+  },
+  separator: {
+    backgroundColor: '#e2e2e2',
+    height: 1,
+    width:'80%',
+    alignSelf: 'center',
+  },
+  footer:{
+    alignSelf: 'center',
+     fontSize: 20,
+     color: 'white',
+     backgroundColor: 'black',
+     width: '100%',
+  },
+  footerText:{
+    alignSelf: 'center', 
+    fontSize: 20,
+    color: 'white',
+  },
+  headerText:{
+    alignSelf: 'center', 
+    fontSize: 20,
+    color: 'black',
+  },
+  item: {
+    height: 80,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 10,
+    width: '100%',
+    marginVertical: 5,
+    borderRadius: 8,
+  }
+});
