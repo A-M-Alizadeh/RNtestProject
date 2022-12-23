@@ -1,7 +1,8 @@
-import React,{useState} from 'react'
+import React,{useState, useEffect} from 'react'
 import { View, Text, StyleSheet } from 'react-native'
 import Lottie from 'lottie-react-native';
 import AppIntroSlider from 'react-native-app-intro-slider';
+import { readAsync, saveAsynce } from '../utils/Utils';
 
 const slides = [
     {
@@ -44,10 +45,28 @@ const slides = [
 
 
 export default function Intro({navigation}){
-    const [showRealApp, setShowRealApp] = useState(false)
-    _onDone = () => {
-        setShowRealApp(true)
+    const[showIntro, setShowIntro] = useState(false)
+
+    passIntro = () => {
+        console.log('passIntro called');
         navigation.replace('Initial');
+    }
+    useEffect(() => {
+        readAsync('@intro_status').then((value) => {
+            console.log('useEffect intro called', value);
+            value == 'seen' ? passIntro() : setShowIntro(true);
+        })
+    },[])
+
+    introSeen = () => {
+        saveAsynce('@intro_status', 'seen').then(() => {
+            navigation.replace('Initial');
+            console.log('Intro Seen');
+        })
+    }
+
+    _onDone = () => {
+        introSeen();
     }
 
     _renderItem = ({item}) => {
@@ -60,10 +79,11 @@ export default function Intro({navigation}){
         )
     }
 
-    return(
-        <AppIntroSlider renderItem={this._renderItem} data={slides} onDone={this._onDone}/>
-    )
-}
+    if(showIntro){
+        return(
+            <AppIntroSlider renderItem={_renderItem} data={slides} onDone={_onDone} /> 
+        )
+}}
 
 const styles = StyleSheet.create({
     slide: {
