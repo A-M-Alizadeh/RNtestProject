@@ -4,7 +4,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import 'react-native-gesture-handler';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { Home, MyList,Login, Register, Setting, Splash, Intro } from './pages';
+import { Home, MyList,Login, Register, Setting, Splash, Intro, Animations } from './pages';
 import { NativeBaseProvider } from "native-base";
 
 const MyTheme = {
@@ -40,10 +40,11 @@ const HomeStack = (navigation) => {
 
 const DrawerStack = () => {
   return(
-    <Drawer.Navigator initialRouteName='Main'>
+    <Drawer.Navigator initialRouteName='Animations'>
         <Drawer.Screen name="Main" component={HomeStack}/>
         <Drawer.Screen name="Login/Register" component={AuthTabs} />
         <Drawer.Screen name="Setting" component={Setting} />
+        <Drawer.Screen name="Animations" component={Animations} />
     </Drawer.Navigator>
   )
 }

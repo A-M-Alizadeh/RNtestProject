@@ -8,7 +8,7 @@ export default function Splash({navigation}) {
   useEffect(() => {
     setTimeout(() => {
       setAuthLoaded(true);
-    }, 2000);
+    }, 500);
   }, []);
 
   useEffect(() => {
