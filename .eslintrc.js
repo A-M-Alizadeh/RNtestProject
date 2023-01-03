@@ -1,7 +1,8 @@
 module.exports = {
     'env': {
         'browser': true,
-        'es2021': true
+        'es2015': true,
+        'node': true,
     },
     'extends': [
         'eslint:recommended',
@@ -32,6 +33,7 @@ module.exports = {
         'semi': [
             'error',
             'always'
-        ]
+        ],
+        'react/jsx-filename-extension': [ 'warn', {'extensions': ['.tsx']} ]
     }
 };
