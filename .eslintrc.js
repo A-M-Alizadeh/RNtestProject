@@ -1,8 +1,8 @@
 module.exports = {
     'env': {
         'browser': true,
-        'es2015': true,
-        'node': true,
+        'es2021': true,
+        'node': true
     },
     'extends': [
         'eslint:recommended',
@@ -22,6 +22,7 @@ module.exports = {
             'error',
             4
         ],
+        'no-var': true,
         'linebreak-style': [
             'error',
             'unix'
@@ -33,7 +34,6 @@ module.exports = {
         'semi': [
             'error',
             'always'
-        ],
-        'react/jsx-filename-extension': [ 'warn', {'extensions': ['.tsx']} ]
+        ]
     }
 };
