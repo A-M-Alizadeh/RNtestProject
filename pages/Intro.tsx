@@ -3,6 +3,17 @@ import { View, Text, StyleSheet } from 'react-native'
 import Lottie from 'lottie-react-native';
 import AppIntroSlider from 'react-native-app-intro-slider';
 import { readAsync, saveAsynce } from '../utils/Utils';
+import { useNavigation } from '@react-navigation/native';
+
+interface ISlide{
+    key: string;
+    title: string;
+    text: string;
+    image: any;
+    backgroundColor: string;
+    titleColor: string;
+    textColor: string;
+}
 
 const slides = [
     {
@@ -44,10 +55,11 @@ const slides = [
 ];
 
 
-export default function Intro({navigation}){
+export default function Intro(){
+    const navigation = useNavigation()
     const[showIntro, setShowIntro] = useState(false)
 
-    passIntro = () => {
+    const passIntro = () => {
         console.log('passIntro called');
         navigation.replace('Initial');
     }
@@ -58,18 +70,18 @@ export default function Intro({navigation}){
         })
     },[])
 
-    introSeen = () => {
+    const introSeen = () => {
         saveAsynce('@intro_status', 'seen').then(() => {
             navigation.replace('Initial');
             console.log('Intro Seen');
         })
     }
 
-    _onDone = () => {
+    const _onDone = () => {
         introSeen();
     }
 
-    _renderItem = ({item}) => {
+    const _renderItem = (item:ISlide) => {
         return(
             <View style={[styles.slide,{ backgroundColor: item.backgroundColor}]}>
             <Text style={[styles.title,{color:item.titleColor}]}>{item.title}</Text>
