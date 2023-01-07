@@ -1,40 +1,55 @@
 import { View, Text, StyleSheet, StatusBar, SafeAreaView, FlatList, TouchableOpacity, Animated, Button } from 'react-native'
-import React,{useState, useEffect, useRef} from 'react'
+import React,{useState, useEffect, useRef, FunctionComponent} from 'react'
 import data from '../utils/fakeData.json'
 import { Fab, WarningTwoIcon } from 'native-base';
 
-const Item = ({ item, onPress, backgroundColor, textColor }) => (
+interface IItem {
+  id: number,
+  title: string,
+  url: string,
+  thumbnailUrl: string,
+  albumId: number
+}
+interface IProps {
+  item: IItem,
+  onPress: any,
+  backgroundColor: string,
+  textColor: string,
+  style: any,
+}
+
+const Item = ({ item, onPress, backgroundColor, textColor }: IProps) => (
   <Animated.View>
-    <TouchableOpacity onPress={onPress} style={[styles.item, backgroundColor]}>
-      <Text style={[styles.title, textColor]}>{item.title} {item.id}</Text>
+    <TouchableOpacity onPress={onPress} style={[styles.item, {backgroundColor}]}>
+      <Text style={[styles.title, {color:textColor}]}>{item.title} {item.id}</Text>
     </TouchableOpacity>
   </Animated.View>
 );
 
 export default function Home() {
-  const [selectedId, setSelectedId] = useState(null);
-  const flatRef = useRef(null);
+  const [selectedId, setSelectedId] = useState<number>(-1);
+  const flatRef = useRef<FlatList>(null);
 
   const AnimatedFlatList = Animated.createAnimatedComponent(FlatList);
   const y = new Animated.Value(0);
   const onScroll = Animated.event([{ nativeEvent: { contentOffset: { y } } }], { useNativeDriver: true });
 
-  const renderItem = ({ item }) => {
+  const renderItem = ({item}:IProps) => {
     const backgroundColor = item.id === selectedId ? "gray" : "lightgray";
-    const color = item.id === selectedId ? 'white' : 'black';
+    const color:string = item.id === selectedId ? 'white' : 'black';
     return (
       <Item
         style={styles.item}
         item={item}
         onPress={() => setSelectedId(item.id)}
-        backgroundColor={{ backgroundColor }}
-        textColor={{ color }}
+        backgroundColor={ backgroundColor }
+        textColor={ color }
       />
     );
   };
 
-  const foonction = () => {
-    flatRef.current.scrollToIndex({animated: true, index: 200});
+  const foonction = ():void => {
+    flatRef.current?.scrollToIndex({animated: true, index: 200});
   }
 
 
@@ -61,7 +76,7 @@ export default function Home() {
         scrollEventThrottle={16} 
         {...{ onScroll }}
       /> 
-      <Fab position="absolute" size="sm" icon={<WarningTwoIcon/>} onPress={()=> flatRef.current.scrollToOffset({animated: true, offset: 0})}/>
+      <Fab position="absolute" size="sm" icon={<WarningTwoIcon/>} onPress={()=> flatRef.current?.scrollToOffset({animated: true, offset: 0})}/>
     </SafeAreaView>
   )
 }
